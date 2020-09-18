@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.nvvi9:YTStream:0.1.1'
+    implementation 'com.github.nvvi9:YTStream:0.1.0'
 }
 ```
 ### Maven
