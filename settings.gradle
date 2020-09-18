@@ -1,0 +1,2 @@
+include ':YTStream'
+rootProject.name = "YTStream"
