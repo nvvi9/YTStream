@@ -1,7 +1,8 @@
-plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-}
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'com.github.nvvi9'
 
 android {
     compileSdkVersion 29
@@ -12,7 +13,6 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "0.1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
