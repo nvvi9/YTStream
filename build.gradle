@@ -7,6 +7,26 @@ buildscript {
         junit_version = '4.13'
         junit_ext_version = '1.1.2'
         espresso_version = '3.3.0'
+
+        bintrayRepo = 'nvvi9'
+        bintrayName = 'ytstream'
+
+        publishedGroupId = 'com.nvvi9'
+        libraryName = 'YTStream'
+        artifact = 'ytstream'
+
+        libraryDescription = 'Android library for extracting YouTube video streaming URLs.'
+
+        siteUrl = 'https://github.com/nvvi9/YTStream'
+        gitUrl = 'https://github.com/nvvi9/YTStream.git'
+
+        libraryVersion = '0.1.0'
+
+        developerId = 'nvvi9'
+
+        licenseName = 'GNU General Public License version 3'
+        licenseUrl = 'https://opensource.org/licenses/gpl-3.0.html'
+        allLicenses = ["GPL-3.0"]
     }
     repositories {
         google()
