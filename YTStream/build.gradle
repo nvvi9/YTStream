@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 group = 'com.nvvi9'
+version = '0.1.0'
 
 android {
     compileSdkVersion 29
@@ -11,7 +12,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
-        versionName "0.1.1"
+        versionName "0.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
