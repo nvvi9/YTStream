@@ -1,7 +1,7 @@
-package com.nvvi9.ytstream.js
+package com.nvvi9.js
 
-import com.nvvi9.ytstream.network.KtorService
-import com.nvvi9.ytstream.utils.tryOrNull
+import com.nvvi9.network.KtorService
+import com.nvvi9.utils.tryOrNull
 import kotlinx.coroutines.coroutineScope
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Pattern

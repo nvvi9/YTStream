@@ -1,4 +1,4 @@
-package com.nvvi9.ytstream.model
+package com.nvvi9.model
 
 
 data class Thumbnail(

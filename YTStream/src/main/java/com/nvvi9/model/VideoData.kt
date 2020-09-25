@@ -1,9 +1,9 @@
-package com.nvvi9.ytstream.model
+package com.nvvi9.model
 
-import com.nvvi9.ytstream.js.JsExecutor
-import com.nvvi9.ytstream.model.streams.EncodedStreams
-import com.nvvi9.ytstream.model.streams.Stream
-import com.nvvi9.ytstream.utils.encodeStreams
+import com.nvvi9.js.JsExecutor
+import com.nvvi9.model.streams.EncodedStreams
+import com.nvvi9.model.streams.Stream
+import com.nvvi9.utils.encodeStreams
 import kotlinx.coroutines.flow.flow
 
 

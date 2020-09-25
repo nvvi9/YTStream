@@ -1,8 +1,8 @@
-package com.nvvi9.ytstream.model.raw
+package com.nvvi9.model.raw
 
-import com.nvvi9.ytstream.network.KtorService
-import com.nvvi9.ytstream.utils.decode
-import com.nvvi9.ytstream.utils.tryOrNull
+import com.nvvi9.network.KtorService
+import com.nvvi9.utils.decode
+import com.nvvi9.utils.tryOrNull
 import kotlinx.coroutines.coroutineScope
 import java.util.regex.Pattern
 

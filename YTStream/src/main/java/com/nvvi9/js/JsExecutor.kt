@@ -1,4 +1,4 @@
-package com.nvvi9.ytstream.js
+package com.nvvi9.js
 
 import com.squareup.duktape.Duktape
 import kotlinx.coroutines.coroutineScope

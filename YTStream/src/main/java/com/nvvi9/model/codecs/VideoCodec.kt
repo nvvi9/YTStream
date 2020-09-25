@@ -1,4 +1,4 @@
-package com.nvvi9.ytstream.model.codecs
+package com.nvvi9.model.codecs
 
 
 enum class VideoCodec {

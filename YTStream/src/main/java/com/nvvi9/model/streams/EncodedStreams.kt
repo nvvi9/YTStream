@@ -1,9 +1,9 @@
-package com.nvvi9.ytstream.model.streams
+package com.nvvi9.model.streams
 
-import com.nvvi9.ytstream.js.JsDecryption
-import com.nvvi9.ytstream.model.VideoDetails
-import com.nvvi9.ytstream.model.raw.Raw
-import com.nvvi9.ytstream.utils.decode
+import com.nvvi9.js.JsDecryption
+import com.nvvi9.model.VideoDetails
+import com.nvvi9.model.raw.Raw
+import com.nvvi9.utils.decode
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow

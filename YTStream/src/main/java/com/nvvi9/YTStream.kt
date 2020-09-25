@@ -1,9 +1,9 @@
-package com.nvvi9.ytstream
+package com.nvvi9
 
-import com.nvvi9.ytstream.model.VideoData
-import com.nvvi9.ytstream.model.VideoDetails
-import com.nvvi9.ytstream.model.raw.Raw
-import com.nvvi9.ytstream.model.streams.EncodedStreams
+import com.nvvi9.model.VideoData
+import com.nvvi9.model.VideoDetails
+import com.nvvi9.model.raw.Raw
+import com.nvvi9.model.streams.EncodedStreams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.asFlow

@@ -1,7 +1,7 @@
-package com.nvvi9.ytstream.model.streams
+package com.nvvi9.model.streams
 
-import com.nvvi9.ytstream.model.codecs.AudioCodec
-import com.nvvi9.ytstream.model.codecs.VideoCodec
+import com.nvvi9.model.codecs.AudioCodec
+import com.nvvi9.model.codecs.VideoCodec
 
 
 data class Stream(

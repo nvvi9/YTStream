@@ -52,3 +52,6 @@ dependencies {
 }
 
 apply from: 'publish.gradle'
+repositories {
+    mavenCentral()
+}

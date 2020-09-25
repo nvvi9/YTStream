@@ -1,6 +1,6 @@
-package com.nvvi9.ytstream.utils
+package com.nvvi9.utils
 
-import com.nvvi9.ytstream.model.streams.Stream
+import com.nvvi9.model.streams.Stream
 import java.net.URLDecoder
 import java.net.URLEncoder
 

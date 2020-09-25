@@ -1,6 +1,6 @@
-package com.nvvi9.ytstream.network
+package com.nvvi9.network
 
-import com.nvvi9.ytstream.utils.encode
+import com.nvvi9.utils.encode
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*

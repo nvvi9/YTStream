@@ -1,4 +1,4 @@
-package com.nvvi9.ytstream.model.streams
+package com.nvvi9.model.streams
 
 
 enum class Extension {
