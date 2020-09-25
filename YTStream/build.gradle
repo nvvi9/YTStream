@@ -1,8 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.github.dcendents.android-maven'
 
-group = 'com.github.nvvi9'
+group = 'com.nvvi9'
 
 android {
     compileSdkVersion 29
@@ -51,3 +50,5 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$junit_ext_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
 }
+
+apply from: 'publish.gradle'
