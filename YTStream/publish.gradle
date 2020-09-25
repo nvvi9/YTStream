@@ -6,8 +6,9 @@ version '0.1.0'
 
 publishing {
     publications {
-        Production(MavenPublication) {
-            artifact("$buildDir/outputs/aar/YTStream-release.aar")
+        release(MavenPublication) {
+//            artifact("$buildDir/outputs/aar/YTStream-release.aar")
+            from components.release
             groupId this.group
             artifactId 'ytstream'
             version this.version
@@ -33,6 +34,8 @@ properties.load(new FileInputStream("local.properties"))
 bintray {
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.apikey")
+    publications = ['release']
+    publish = true
     override = true
     pkg {
         repo = 'nvvi9'
