@@ -1,5 +1,5 @@
 # YTStream
-[![](https://jitpack.io/v/nvvi9/YTStream.svg)](https://jitpack.io/#nvvi9/YTStream)
+[ ![Download](https://api.bintray.com/packages/nvvi9/maven/YTStream/images/download.svg) ](https://bintray.com/nvvi9/maven/YTStream/_latestVersion)
 
 Android library for extracting YouTube video streaming URLs.
 
@@ -31,25 +31,19 @@ ytStream.extractVideoDetailsObservable(videoIdArray)
 ```groovy
 repositories {
     ...
-    maven { url 'https://jitpack.io' }
+    jcenter()
 }
 
 dependencies {
-    implementation 'com.github.nvvi9:YTStream:0.1.0'
+    implementation 'com.nvvi9:ytstream:0.1.0'
 }
 ```
 ### Maven
 ```xml
-<repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-
 <dependency>
-    <groupId>com.github.nvvi9</groupId>
-    <artifactId>YTStream</artifactId>
+    <groupId>com.nvvi9</groupId>
+    <artifactId>ytstream</artifactId>
     <version>0.1.0</version>
+    <type>pom</type>
 </dependency>
 ```
