@@ -33,11 +33,11 @@ ytStream.extractVideoDetailsObservable(videoIdArray)
 ```groovy
 repositories {
     ...
-    jcenter()
+    maven { url 'https://dl.bintray.com/nvvi9/maven' }
 }
 
 dependencies {
-    implementation 'com.nvvi9:ytstream:0.1.0'
+    implementation 'com.nvvi9:ytstream:0.1.1'
 }
 ```
 ### Maven
@@ -45,7 +45,7 @@ dependencies {
 <dependency>
     <groupId>com.nvvi9</groupId>
     <artifactId>ytstream</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <type>pom</type>
 </dependency>
 ```
