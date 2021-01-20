@@ -6,7 +6,7 @@ import kotlinx.coroutines.coroutineScope
 
 internal object JsExecutor {
 
-    private val duktape = Duktape.create()
+    private val duktape: Duktape = Duktape.create()
 
     suspend fun executeScript(script: String) = coroutineScope {
         duktape.evaluate(script) as String?

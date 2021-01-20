@@ -17,8 +17,9 @@ internal data class JsDecryption(
         private val jsHashMap = ConcurrentHashMap<String, JsDecryption>()
 
         @Suppress("BlockingMethodInNonBlockingContext")
-        suspend fun fromVideoPageSource(videPageSource: String) = coroutineScope {
-            patternDecryptionJsFile.matcher(videPageSource).takeIf { it.find() }
+        suspend fun fromVideoPageSource(videPageSource: String): JsDecryption? = coroutineScope {
+            (patternDecryptionJsFile.matcher(videPageSource).takeIf { it.find() }
+                ?: patternDecryptionJsFileWithoutSlash.matcher(videPageSource).takeIf { it.find() })
                 ?.group(0)?.replace("\\/", "/")?.let { jsPath ->
                     jsHashMap.getOrPut(jsPath) {
                         tryOrNull {
@@ -67,7 +68,8 @@ internal data class JsDecryption(
                                     if (mainVariable.contains(variableDef)) {
                                         continue
                                     }
-                                    startIndex = jsFile.indexOf(variableDef) + variableDef.length
+                                    startIndex =
+                                        jsFile.indexOf(variableDef) + variableDef.length
 
                                     braces = 1
 
@@ -93,7 +95,8 @@ internal data class JsDecryption(
                                     if (mainVariable.contains(functionDef)) {
                                         continue
                                     }
-                                    startIndex = jsFile.indexOf(functionDef) + functionDef.length
+                                    startIndex =
+                                        jsFile.indexOf(functionDef) + functionDef.length
 
                                     braces = 0
 
@@ -112,11 +115,12 @@ internal data class JsDecryption(
                                         }
                                     }
                                 }
+
                                 JsDecryption(mainVariable, decryptionFunction)
                             } else {
-                                null
+                                return@coroutineScope null
                             }
-                        }
+                        } ?: return@coroutineScope null
                     }
                 }
         }
@@ -129,5 +133,7 @@ internal data class JsDecryption(
             Pattern.compile("\\\\/player\\\\/([^\"]+?)\\.js")
         private val patternSignatureDecryptionFunction: Pattern =
             Pattern.compile("(?:\\b|[^a-zA-Z0-9\$])([a-zA-Z0-9\$]{2})\\s*=\\s*function\\(\\s*a\\s*\\)\\s*\\{\\s*a\\s*=\\s*a\\.split\\(\\s*\"\"\\s*\\)")
+        private val patternDecryptionJsFileWithoutSlash: Pattern =
+            Pattern.compile("/s/player/([^\"]+?).js")
     }
 }

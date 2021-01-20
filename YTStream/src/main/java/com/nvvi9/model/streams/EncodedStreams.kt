@@ -68,7 +68,7 @@ internal class EncodedStreams(
                         url = mat.group(1).decode()
                         mat = patternEncSig.matcher(cipher)
                         if (mat.find()) {
-                            sig = mat.group(1).decode()
+                            sig = mat.group(1).decode().replace("\\u0026", "&").split("&")[0]
                         } else {
                             continue
                         }

@@ -39,6 +39,6 @@ internal object KtorService {
     }
 
     suspend fun getJsFile(jsPath: String) = withContext(Dispatchers.IO) {
-        ktor.get<String>("https://www.youtube.com/s/$jsPath")
+        ktor.get<String>("https://www.youtube.com$jsPath")
     }
 }
