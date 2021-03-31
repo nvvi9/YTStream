@@ -9,6 +9,8 @@ internal object JsExecutor {
     private val duktape: Duktape = Duktape.create()
 
     suspend fun executeScript(script: String) = coroutineScope {
-        duktape.evaluate(script) as String?
+        runCatching {
+            duktape.evaluate(script) as String?
+        }
     }
 }

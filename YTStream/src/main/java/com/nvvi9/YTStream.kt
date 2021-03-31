@@ -21,14 +21,16 @@ class YTStream {
             .flatMapMerge { Raw.fromIdFlow(it) }
             .flatMapMerge { EncodedStreams.fromRawFlow(it) }
             .flatMapMerge { VideoData.fromEncodedStreamsFlow(it) }
+            .filterNotNull()
 
     fun extractVideoDetails(vararg id: String) =
         id.asFlow()
             .flatMapMerge { VideoDetails.fromIdFlow(it) }
+            .filterNotNull()
 
     fun extractVideoDataObservable(vararg id: String) =
-        extractVideoData(*id).filterNotNull().asObservable()
+        extractVideoData(*id).asObservable()
 
     fun extractVideoDetailsObservable(vararg id: String) =
-        extractVideoDetails(*id).filterNotNull().asObservable()
+        extractVideoDetails(*id).asObservable()
 }

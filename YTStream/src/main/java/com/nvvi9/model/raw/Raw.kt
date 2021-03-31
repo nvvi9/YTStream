@@ -2,8 +2,6 @@ package com.nvvi9.model.raw
 
 import com.nvvi9.model.VideoDetails
 import com.nvvi9.network.KtorService
-import com.nvvi9.utils.ifNotNull
-import com.nvvi9.utils.tryOrNull
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow
@@ -19,17 +17,17 @@ internal class Raw(val videoPageSource: String, val videoDetails: VideoDetails) 
 
         private suspend fun fromId(id: String) = coroutineScope {
             val videoPageSource = async {
-                tryOrNull {
-                    KtorService.getVideoPage(id).replace("\\\"", "\"")
-                }
+                KtorService.getVideoPage(id).map { it.replace("\\\"", "\"") }
             }
 
             val videoDetails = async {
                 VideoDetails.fromId(id)
             }
 
-            ifNotNull(videoPageSource.await(), videoDetails.await()) { pageSource, details ->
-                Raw(pageSource, details)
+            videoPageSource.await().getOrNull()?.let { pageSource ->
+                videoDetails.await().getOrNull()?.let { details ->
+                    Raw(pageSource, details)
+                }
             }
         }
     }

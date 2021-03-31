@@ -4,6 +4,7 @@ import com.nvvi9.js.JsDecryption
 import com.nvvi9.model.VideoDetails
 import com.nvvi9.model.raw.Raw
 import com.nvvi9.utils.decode
+import com.nvvi9.utils.getIf
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow
@@ -35,11 +36,10 @@ internal class EncodedStreams(
             val isEncoded = raw.videoDetails.isSignatureEncoded
             val statusOk = raw.videoDetails.statusOk
 
-            val jsDecryptionDef = if (isEncoded || !statusOk) {
-                async { JsDecryption.fromVideoPageSource(raw.videoPageSource) }
-            } else {
-                null
-            }
+            val jsDecryptionDef =
+                raw.videoPageSource
+                    .getIf { isEncoded || !statusOk }
+                    .map { async { JsDecryption.fromVideoPageSource(it) } }
 
             val (encodedSignatures, streams) =
                 getEncSignaturesStreams(
@@ -47,7 +47,10 @@ internal class EncodedStreams(
                     if (isEncoded || !statusOk) raw.videoPageSource else raw.videoDetails.rawResponse.raw
                 )
 
-            EncodedStreams(encodedSignatures, streams, raw.videoDetails, jsDecryptionDef?.await())
+            EncodedStreams(
+                encodedSignatures, streams, raw.videoDetails,
+                jsDecryptionDef.getOrNull()?.await()?.getOrNull()
+            )
         }
 
         private fun getEncSignaturesStreams(

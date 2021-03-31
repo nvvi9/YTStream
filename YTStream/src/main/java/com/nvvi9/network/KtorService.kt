@@ -31,14 +31,18 @@ internal object KtorService {
     }
 
     suspend fun getVideoPage(id: String) = withContext(Dispatchers.IO) {
-        ktor.get<String>("https://www.youtube.com/watch?v=$id")
+        runCatching { ktor.get<String>("https://www.youtube.com/watch?v=$id") }
     }
 
     suspend fun getVideoInfo(id: String) = withContext(Dispatchers.IO) {
-        ktor.get<String>("https://www.youtube.com/get_video_info?video_id=$id&eurl=${"https://youtube.googleapis.com/v/$id".encode()}")
+        runCatching { ktor.get<String>("https://www.youtube.com/get_video_info?video_id=$id&eurl=${"https://youtube.googleapis.com/v/$id".encode()}") }
     }
 
     suspend fun getJsFile(jsPath: String) = withContext(Dispatchers.IO) {
-        ktor.get<String>("https://www.youtube.com$jsPath")
+        runCatching { ktor.get<String>("https://www.youtube.com$jsPath") }
+    }
+
+    suspend fun getPlaylistPage(playlistId: String) = withContext(Dispatchers.IO) {
+        runCatching { ktor.get<String>("https://www.youtube.com/watch?list=${playlistId}") }
     }
 }

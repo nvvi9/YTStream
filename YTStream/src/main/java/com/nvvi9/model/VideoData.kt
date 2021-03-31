@@ -3,8 +3,9 @@ package com.nvvi9.model
 import com.nvvi9.js.JsExecutor
 import com.nvvi9.model.streams.EncodedStreams
 import com.nvvi9.model.streams.Stream
-import com.nvvi9.utils.encodeStreams
+import com.nvvi9.utils.encode
 import kotlinx.coroutines.flow.flow
+import java.util.regex.Pattern
 
 
 data class VideoData(
@@ -17,14 +18,16 @@ data class VideoData(
         internal suspend fun fromEncodedStreamsFlow(encodedStreams: EncodedStreams?) = flow {
             emit(encodedStreams?.run {
                 jsCode?.let { script ->
-                    JsExecutor.executeScript(script)?.split("\n")?.let {
+                    JsExecutor.executeScript(script).getOrNull()?.split("\n")?.let {
                         VideoData(
                             videoDetails,
-                            streams.toMutableList().encodeStreams(it, encodedSignatures)
+                            streams.encode(it, encodedSignatures)
                         )
                     }
                 } ?: VideoData(videoDetails, streams)
             })
         }
+
+        private val patternPlaylistTitle = Pattern.compile("")
     }
 }

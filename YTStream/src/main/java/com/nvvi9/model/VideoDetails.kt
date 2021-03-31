@@ -1,7 +1,7 @@
 package com.nvvi9.model
 
 import com.nvvi9.model.raw.RawResponse
-import com.nvvi9.utils.ifNotNull
+import com.nvvi9.utils.mapNotNull
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.flow
 
@@ -29,7 +29,6 @@ data class VideoDetails(
     companion object {
 
         internal suspend fun fromId(id: String) = coroutineScope {
-            val raw = RawResponse.fromId(id)
             val thumbnailUrl = "https://img.youtube.com/vi/$id"
             val thumbnails = listOf(
                 Thumbnail(120, 90, "$thumbnailUrl/default.jpg"),
@@ -37,18 +36,24 @@ data class VideoDetails(
                 Thumbnail(480, 360, "$thumbnailUrl/hqdefault.jpg")
             )
 
-            raw?.run {
-                ifNotNull(id, title) { id, title ->
-                    VideoDetails(
-                        id, title, author, channelId, description, durationSeconds, viewCount,
-                        thumbnails, expiresInSeconds, isLiveStream, isEncoded, statusOk, this
-                    )
+            RawResponse.fromId(id)
+                .mapNotNull { rawResponse ->
+                    rawResponse.id?.let { id ->
+                        rawResponse.title?.let { title ->
+                            VideoDetails(
+                                id, title,
+                                rawResponse.author, rawResponse.channelId, rawResponse.description,
+                                rawResponse.durationSeconds, rawResponse.viewCount,
+                                thumbnails, rawResponse.expiresInSeconds, rawResponse.isLiveStream,
+                                rawResponse.isEncoded, rawResponse.statusOk, rawResponse
+                            )
+                        }
+                    }
                 }
-            }
         }
 
         internal suspend fun fromIdFlow(id: String) = flow {
-            emit(fromId(id))
+            emit(fromId(id).getOrNull())
         }
     }
 }

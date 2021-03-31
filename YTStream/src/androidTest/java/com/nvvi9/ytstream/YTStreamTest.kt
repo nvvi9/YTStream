@@ -1,5 +1,6 @@
 package com.nvvi9.ytstream
 
+import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nvvi9.YTStream
 import com.nvvi9.model.VideoData
@@ -64,6 +65,7 @@ class YTStreamTest {
     }
 
     private fun checkVideoData(videoData: VideoData?) {
+        Log.i(this::class.simpleName, videoData?.toString() ?: "null")
         assertNotNull("null videoData", videoData)
         videoData?.run {
             checkVideoDetails(videoDetails)
@@ -72,6 +74,7 @@ class YTStreamTest {
     }
 
     private fun checkVideoDetails(videoDetails: VideoDetails?) {
+//        Log.i(this::class.simpleName, videoDetails?.toString() ?: "null")
         videoDetails?.run {
             assertNotNull("null id", id)
             assertNotNull("null channel $id", channel)

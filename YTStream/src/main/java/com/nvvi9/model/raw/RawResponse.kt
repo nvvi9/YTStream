@@ -2,7 +2,6 @@ package com.nvvi9.model.raw
 
 import com.nvvi9.network.KtorService
 import com.nvvi9.utils.decode
-import com.nvvi9.utils.tryOrNull
 import kotlinx.coroutines.coroutineScope
 import java.util.regex.Pattern
 
@@ -16,20 +15,20 @@ inline class RawResponse(val raw: String) {
     val author get() = patternAuthor.matcher(raw).takeIf { it.find() }?.group(1)
     val channelId get() = patternChannelId.matcher(raw).takeIf { it.find() }?.group(1)
     val description get() = patternShortDescription.matcher(raw).takeIf { it.find() }?.group(1)
-    val durationSeconds get() = patternLengthSeconds.matcher(raw).takeIf { it.find() }?.group(1)?.toLong()
+    val durationSeconds
+        get() = patternLengthSeconds.matcher(raw).takeIf { it.find() }?.group(1)?.toLong()
     val viewCount get() = patternViewCount.matcher(raw).takeIf { it.find() }?.group(1)?.toLong()
-    val expiresInSeconds get() = patternExpiresInSeconds.matcher(raw).takeIf { it.find() }?.group(1)?.toLong()
+    val expiresInSeconds
+        get() = patternExpiresInSeconds.matcher(raw).takeIf { it.find() }?.group(1)?.toLong()
     val isEncoded get() = patternCipher.matcher(raw).find()
     val statusOk get() = patternStatusOk.matcher(raw).find()
 
     companion object {
 
         internal suspend fun fromId(id: String) = coroutineScope {
-            tryOrNull {
-                KtorService.getVideoInfo(id).decode().replace("\\u0026", "&").let {
-                    RawResponse(it)
-                }
-            }
+            KtorService.getVideoInfo(id)
+                .mapCatching { it.decode().replace("\\u0026", "&") }
+                .map { RawResponse(it) }
         }
 
         private val patternTitle: Pattern = Pattern.compile("\"title\"\\s*:\\s*\"(.*?)\"")

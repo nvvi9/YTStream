@@ -11,27 +11,24 @@ internal fun String.decode(): String =
 internal fun String.encode(): String =
     URLEncoder.encode(this, "UTF-8")
 
-internal inline fun <A, B, R> ifNotNull(a: A?, b: B?, f: (A, B) -> R): R? {
-    return if (a != null && b != null) {
-        f(a, b)
-    } else {
-        null
-    }
-}
-
-internal inline fun <R> tryOrNull(action: () -> R) =
-    try {
-        action()
-    } catch (t: Throwable) {
-        null
+internal fun List<Stream>.encode(decodeSignatures: List<String>, encSignatures: Map<Int, String>) =
+    encSignatures.keys.zip(decodeSignatures).toMap().let { signatures ->
+        filter { signatures.any { (key, _) -> it.streamDetails.itag == key } }
+            .map { it to it.copy(url = it.url.plus("&sig=${signatures[it.streamDetails.itag]}")) }
+            .unzip()
+            .let { this - it.first + it.second }
     }
 
-internal fun MutableList<Stream>.encodeStreams(
-    decodeSignatures: List<String>,
-    encSignatures: Map<Int, String>
-): List<Stream> = apply {
-    encSignatures.keys.zip(decodeSignatures).forEach { (key, signature) ->
-        find { it.streamDetails.itag == key }.also { remove(it) }?.url?.plus("&sig=$signature")
-            ?.let { Stream.fromItag(key, it) }?.let { add(it) }
-    }
-}
+internal fun <T> T?.takeIfNotNull() =
+    this?.let { Result.success(it) } ?: Result.failure(Exception("extension applied on null value"))
+
+internal inline fun <R> runCatchingNull(block: () -> R?) =
+    block()?.let {
+        Result.success(it)
+    } ?: Result.failure(Exception("returning null value"))
+
+internal inline fun <T> T.getIf(predicate: (T) -> Boolean) =
+    if (predicate(this)) Result.success(this) else Result.failure(Exception("not matching predicate"))
+
+internal inline fun <T, R> Result<T>.mapNotNull(transform: (value: T) -> R?) =
+    runCatchingNull { getOrNull()?.let { transform(it) } }
