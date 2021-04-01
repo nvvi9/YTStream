@@ -4,7 +4,7 @@ import com.nvvi9.model.codecs.AudioCodec
 import com.nvvi9.model.codecs.VideoCodec
 
 
-data class Stream(
+data class Stream private constructor(
     val url: String,
     val streamDetails: StreamDetails
 ) {

@@ -5,7 +5,6 @@ import com.nvvi9.model.streams.EncodedStreams
 import com.nvvi9.model.streams.Stream
 import com.nvvi9.utils.encode
 import kotlinx.coroutines.flow.flow
-import java.util.regex.Pattern
 
 
 data class VideoData(
@@ -27,7 +26,5 @@ data class VideoData(
                 } ?: VideoData(videoDetails, streams)
             })
         }
-
-        private val patternPlaylistTitle = Pattern.compile("")
     }
 }

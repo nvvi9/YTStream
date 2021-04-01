@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flow
 import java.util.regex.Pattern
 
 
-internal class EncodedStreams(
+internal class EncodedStreams private constructor(
     val encodedSignatures: Map<Int, String>,
     val streams: List<Stream>,
     val videoDetails: VideoDetails,

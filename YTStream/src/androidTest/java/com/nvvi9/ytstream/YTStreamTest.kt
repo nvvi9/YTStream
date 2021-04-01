@@ -1,10 +1,10 @@
 package com.nvvi9.ytstream
 
-import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nvvi9.YTStream
 import com.nvvi9.model.VideoData
 import com.nvvi9.model.VideoDetails
+import com.nvvi9.model.playlist.PlaylistData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
@@ -36,6 +36,8 @@ class YTStreamTest {
             "kfugSz3m_zA"
         )
 
+    private val playlistId = arrayOf("PLqhFrLVOcKubTAHpven_G3ntVHQNwHILM")
+
     @Test
     fun videoDataExtraction() = runBlocking {
         ytStream.extractVideoData(*id).collect {
@@ -64,8 +66,30 @@ class YTStreamTest {
         }
     }
 
+    @Test
+    fun playlistDataExtraction() = runBlocking {
+        ytStream.extractPlaylistData(*playlistId)
+            .collect { checkPlaylistData(it) }
+
+    }
+
+    @Test
+    fun playlistDataExtractionRx() {
+        ytStream.extractPlaylistDataObservable(*playlistId)
+            .blockingSubscribe { checkPlaylistData(it) }
+    }
+
+    private fun checkPlaylistData(playlistData: PlaylistData) {
+        playlistData.run {
+            assertFalse("empty playlistId", playlistId.isEmpty())
+            assertFalse("empty playlist title", title.isEmpty())
+            videoData.forEach {
+                checkVideoData(it)
+            }
+        }
+    }
+
     private fun checkVideoData(videoData: VideoData?) {
-        Log.i(this::class.simpleName, videoData?.toString() ?: "null")
         assertNotNull("null videoData", videoData)
         videoData?.run {
             checkVideoDetails(videoDetails)
@@ -74,7 +98,6 @@ class YTStreamTest {
     }
 
     private fun checkVideoDetails(videoDetails: VideoDetails?) {
-//        Log.i(this::class.simpleName, videoDetails?.toString() ?: "null")
         videoDetails?.run {
             assertNotNull("null id", id)
             assertNotNull("null channel $id", channel)
