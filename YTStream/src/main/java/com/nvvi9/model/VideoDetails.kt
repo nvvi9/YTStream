@@ -44,7 +44,8 @@ data class VideoDetails(
                                 id, title,
                                 rawResponse.author, rawResponse.channelId, rawResponse.description,
                                 rawResponse.durationSeconds, rawResponse.viewCount,
-                                thumbnails, rawResponse.expiresInSeconds, rawResponse.isLiveStream,
+                                rawResponse.thumbnails ?: thumbnails,
+                                rawResponse.expiresInSeconds, rawResponse.isLiveStream,
                                 rawResponse.isEncoded, rawResponse.statusOk, rawResponse
                             )
                         }

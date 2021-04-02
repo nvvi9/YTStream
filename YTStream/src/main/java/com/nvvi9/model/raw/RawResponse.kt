@@ -1,8 +1,11 @@
 package com.nvvi9.model.raw
 
+import com.nvvi9.model.Thumbnail
 import com.nvvi9.network.KtorService
 import com.nvvi9.utils.decode
+import com.nvvi9.utils.getIf
 import kotlinx.coroutines.coroutineScope
+import org.json.JSONArray
 import java.util.regex.Pattern
 
 
@@ -22,22 +25,65 @@ inline class RawResponse private constructor(val raw: String) {
         get() = patternExpiresInSeconds.matcher(raw).takeIf { it.find() }?.group(1)?.toLong()
     val isEncoded get() = patternCipher.matcher(raw).find()
     val statusOk get() = patternStatusOk.matcher(raw).find()
+    val thumbnails
+        get() = patternThumbnails.matcher(raw).getIf { it.find() }
+            .map { matcher ->
+                val thumbnailsJson = mutableListOf<String>()
+                while (matcher.find()) {
+                    matcher.group(1)?.let { thumbnailsJson.add(it) }
+                }
+                thumbnailsJson.toList()
+            }.map { thumbnailsJson ->
+                thumbnailsJson.filter { thumbnail -> id?.let { thumbnail.contains(it) } ?: false }
+            }.mapCatching { thumbnailsJson ->
+                thumbnailsJson.map {
+                    JSONArray("[$it]")
+                }
+            }
+            .mapCatching { jsonArrays ->
+                jsonArrays.flatMap { jsonArray ->
+                    (0 until jsonArray.length()).map {
+                        jsonArray.getJSONObject(it).run {
+                            Thumbnail(getInt("width"), getInt("height"), getString("url"))
+                        }
+                    }
+                }
+            }.onFailure {
+                it.printStackTrace()
+            }
+            .getOrNull()
 
     companion object {
 
         internal suspend fun fromId(id: String) = coroutineScope {
             KtorService.getVideoInfo(id)
                 .mapCatching { it.decode().replace("\\u0026", "&") }
-                .map { RawResponse(it) }
+                .map {
+                    RawResponse(it)
+                }
+        }
+
+        private fun test(str: String): List<String?> {
+            val list = mutableListOf<String?>()
+            val matcher = patternThumbnails.matcher(str)
+
+            while (matcher.find()) {
+                list.add(matcher.group(1))
+            }
+
+            return list
         }
 
         private val patternTitle: Pattern = Pattern.compile("\"title\"\\s*:\\s*\"(.*?)\"")
-        private val patternVideoId: Pattern = Pattern.compile("\"videoId\"\\s*:\\s*\"(.+?)\"")
+        private val patternVideoId: Pattern =
+            Pattern.compile("\"videoId\"\\s*:\\s*\"(.+?)\"")
         private val patternAuthor: Pattern = Pattern.compile("\"author\"\\s*:\\s*\"(.+?)\"")
-        private val patternChannelId: Pattern = Pattern.compile("\"channelId\"\\s*:\\s*\"(.+?)\"")
+        private val patternChannelId: Pattern =
+            Pattern.compile("\"channelId\"\\s*:\\s*\"(.+?)\"")
         private val patternLengthSeconds: Pattern =
             Pattern.compile("\"lengthSeconds\"\\s*:\\s*\"(\\d+?)\"")
-        private val patternViewCount: Pattern = Pattern.compile("\"viewCount\"\\s*:\\s*\"(\\d+?)\"")
+        private val patternViewCount: Pattern =
+            Pattern.compile("\"viewCount\"\\s*:\\s*\"(\\d+?)\"")
         private val patternExpiresInSeconds: Pattern =
             Pattern.compile("\"expiresInSeconds\"\\s*:\\s*\"(\\d+?)\"")
         private val patternShortDescription: Pattern =
@@ -46,5 +92,7 @@ inline class RawResponse private constructor(val raw: String) {
         private val patternHlsvp: Pattern = Pattern.compile("hlsvp=(.+?)(&|\\z)")
         private val patternCipher: Pattern =
             Pattern.compile("\"signatureCipher\"\\s*:\\s*\"(.+?)\"")
+
+        private val patternThumbnails = Pattern.compile("\"thumbnails\":\\[(.*?)\\]\\}")
     }
 }
