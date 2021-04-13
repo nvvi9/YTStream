@@ -26,21 +26,18 @@ inline class RawResponse private constructor(val raw: String) {
     val isEncoded get() = patternCipher.matcher(raw).find()
     val statusOk get() = patternStatusOk.matcher(raw).find()
     val thumbnails
-        get() = patternThumbnails.matcher(raw).getIf { it.find() }
+        get() = patternThumbnails.matcher(raw)
+            .getIf { it.find() }
             .map { matcher ->
-                val thumbnailsJson = mutableListOf<String>()
-                while (matcher.find()) {
-                    matcher.group(1)?.let { thumbnailsJson.add(it) }
-                }
-                thumbnailsJson.toList()
+                (1..matcher.groupCount())
+                    .fold(listOf<String?>()) { thumbnails, group -> thumbnails + matcher.group(group) }
+                    .filterNotNull()
             }.map { thumbnailsJson ->
                 thumbnailsJson.filter { thumbnail -> id?.let { thumbnail.contains(it) } ?: false }
             }.mapCatching { thumbnailsJson ->
-                thumbnailsJson.map {
-                    JSONArray("[$it]")
-                }
-            }
-            .mapCatching { jsonArrays ->
+                thumbnailsJson
+                    .map { JSONArray("[$it]") }
+            }.mapCatching { jsonArrays ->
                 jsonArrays.flatMap { jsonArray ->
                     (0 until jsonArray.length()).map {
                         jsonArray.getJSONObject(it).run {
@@ -50,49 +47,39 @@ inline class RawResponse private constructor(val raw: String) {
                 }
             }.onFailure {
                 it.printStackTrace()
-            }
-            .getOrNull()
+            }.getOrNull()
 
     companion object {
 
         internal suspend fun fromId(id: String) = coroutineScope {
             KtorService.getVideoInfo(id)
                 .mapCatching { it.decode().replace("\\u0026", "&") }
-                .map {
-                    RawResponse(it)
-                }
+                .map { RawResponse(it) }
         }
 
-        private fun test(str: String): List<String?> {
-            val list = mutableListOf<String?>()
-            val matcher = patternThumbnails.matcher(str)
-
-            while (matcher.find()) {
-                list.add(matcher.group(1))
-            }
-
-            return list
-        }
-
-        private val patternTitle: Pattern = Pattern.compile("\"title\"\\s*:\\s*\"(.*?)\"")
-        private val patternVideoId: Pattern =
+        private val patternTitle =
+            Pattern.compile("\"title\"\\s*:\\s*\"(.*?)\"")
+        private val patternVideoId =
             Pattern.compile("\"videoId\"\\s*:\\s*\"(.+?)\"")
-        private val patternAuthor: Pattern = Pattern.compile("\"author\"\\s*:\\s*\"(.+?)\"")
-        private val patternChannelId: Pattern =
+        private val patternAuthor =
+            Pattern.compile("\"author\"\\s*:\\s*\"(.+?)\"")
+        private val patternChannelId =
             Pattern.compile("\"channelId\"\\s*:\\s*\"(.+?)\"")
-        private val patternLengthSeconds: Pattern =
+        private val patternLengthSeconds =
             Pattern.compile("\"lengthSeconds\"\\s*:\\s*\"(\\d+?)\"")
-        private val patternViewCount: Pattern =
+        private val patternViewCount =
             Pattern.compile("\"viewCount\"\\s*:\\s*\"(\\d+?)\"")
-        private val patternExpiresInSeconds: Pattern =
+        private val patternExpiresInSeconds =
             Pattern.compile("\"expiresInSeconds\"\\s*:\\s*\"(\\d+?)\"")
-        private val patternShortDescription: Pattern =
+        private val patternShortDescription =
             Pattern.compile("\"shortDescription\"\\s*:\\s*\"(.+?)\"")
-        private val patternStatusOk: Pattern = Pattern.compile("status=ok(&|,|\\z)")
-        private val patternHlsvp: Pattern = Pattern.compile("hlsvp=(.+?)(&|\\z)")
-        private val patternCipher: Pattern =
+        private val patternStatusOk =
+            Pattern.compile("status=ok(&|,|\\z)")
+        private val patternHlsvp =
+            Pattern.compile("hlsvp=(.+?)(&|\\z)")
+        private val patternCipher =
             Pattern.compile("\"signatureCipher\"\\s*:\\s*\"(.+?)\"")
-
-        private val patternThumbnails = Pattern.compile("\"thumbnails\":\\[(.*?)\\]\\}")
+        private val patternThumbnails =
+            Pattern.compile("\"thumbnails\":\\[(.*?)\\]\\}")
     }
 }

@@ -17,8 +17,11 @@ class YTStream {
     fun extractVideoDetails(vararg id: String) =
         VideoExtractor.extractVideoDetails(*id)
 
-    fun extractPlaylistData(vararg playlistId: String) =
+    fun extractPlaylistVideoData(vararg playlistId: String) =
         PlaylistExtractor.extractPlaylistVideoData(*playlistId)
+
+    fun extractPlaylistVideoDetails(vararg playlistId: String) =
+        PlaylistExtractor.extractPlaylistVideoDetails(*playlistId)
 
     fun extractVideoDataObservable(vararg id: String) =
         extractVideoData(*id).asObservable()
@@ -26,6 +29,9 @@ class YTStream {
     fun extractVideoDetailsObservable(vararg id: String) =
         extractVideoDetails(*id).asObservable()
 
-    fun extractPlaylistDataObservable(vararg playlistId: String) =
-        extractPlaylistData(*playlistId).asObservable()
+    fun extractPlaylistVideoDataObservable(vararg playlistId: String) =
+        extractPlaylistVideoData(*playlistId).asObservable()
+
+    fun extractPlaylistVideoDetailsObservable(vararg playlistId: String) =
+        extractPlaylistVideoDetails(*playlistId).asObservable()
 }

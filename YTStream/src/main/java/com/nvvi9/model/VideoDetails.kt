@@ -22,10 +22,6 @@ data class VideoDetails(
     internal val rawResponse: RawResponse
 ) {
 
-    override fun toString(): String =
-        "VideoDetails(id=$id, title=$title, channel=$channel, channelId=$channelId," +
-                " durationSeconds=$durationSeconds"
-
     companion object {
 
         internal suspend fun fromId(id: String) = coroutineScope {

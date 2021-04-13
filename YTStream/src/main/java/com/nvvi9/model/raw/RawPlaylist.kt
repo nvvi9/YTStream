@@ -1,4 +1,4 @@
-package com.nvvi9.model.playlist
+package com.nvvi9.model.raw
 
 import com.nvvi9.network.KtorService
 import com.nvvi9.utils.mapNotNull
@@ -20,7 +20,7 @@ internal inline class RawPlaylist private constructor(private val playlist: JSON
 
     companion object {
 
-        internal suspend fun fromPlaylistId(playlistId: String) =
+        suspend fun fromPlaylistId(playlistId: String) =
             KtorService.getPlaylistPage(playlistId)
                 .map { patternPlaylist.matcher(it) }
                 .mapNotNull { matcher -> matcher.takeIf { it.find() }?.group(1) }
