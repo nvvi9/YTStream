@@ -8,7 +8,7 @@ import com.nvvi9.ytstream.model.VideoData
 import com.nvvi9.ytstream.model.VideoDetails
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -37,59 +37,92 @@ class YTStreamTest {
             "kfugSz3m_zA"
         )
 
-    private val playlistId = arrayOf("PLqhFrLVOcKubTAHpven_G3ntVHQNwHILM")
+    private val playlistId = arrayOf(
+        "PLqhFrLVOcKubTAHpven_G3ntVHQNwHILM",
+        "PLp_L1ltSVItxcbJbKRyCd4KWZ4kHfDJ9U",
+        "PLp_L1ltSVItxcg9D6ASZKzQpb5sMw8BAi",
+        "PLp_L1ltSVItxFXp7iTvV-Yh-PhybfDD6j",
+        "PLp_L1ltSVItzh2-0a05Y5LA4nLrdzaddl",
+    )
 
     @Test
     fun videoDataExtraction() = runBlocking {
-        ytStream.extractVideoData(*id).collect {
-            checkVideoData(it)
-        }
+        ytStream.extractVideoData(*id)
+            .toList()
+            .let { videoData ->
+                assertFalse("not full extraction", videoData.size != id.size)
+                videoData.forEach { checkVideoData(it) }
+            }
     }
 
     @Test
     fun videoDetailsExtraction() = runBlocking {
-        ytStream.extractVideoDetails(*id).collect {
-            checkVideoDetails(it)
-        }
+        ytStream.extractVideoDetails(*id)
+            .toList()
+            .let { videoDetails ->
+                assertFalse("not full extraction", videoDetails.size != id.size)
+                videoDetails.forEach { checkVideoDetails(it) }
+            }
     }
 
     @Test
     fun videoDataExtractionRx() {
-        ytStream.extractVideoDataObservable(*id).blockingSubscribe {
-            checkVideoData(it)
-        }
+        ytStream.extractVideoDataObservable(*id)
+            .toList()
+            .blockingSubscribe { videoData ->
+                assertFalse("not full extraction", videoData.size != id.size)
+                videoData.forEach { checkVideoData(it) }
+            }
     }
 
     @Test
     fun videoDetailsExtractionRx() {
-        ytStream.extractVideoDetailsObservable(*id).blockingSubscribe {
-            checkVideoDetails(it)
-        }
+        ytStream.extractVideoDetailsObservable(*id)
+            .toList()
+            .blockingSubscribe { videoDetails ->
+                assertFalse("not full extraction", videoDetails.size != id.size)
+                videoDetails.forEach { checkVideoDetails(it) }
+            }
     }
 
     @Test
     fun playlistDataExtraction() = runBlocking {
         ytStream.extractPlaylistVideoData(*playlistId)
-            .collect { checkPlaylistVideoData(it) }
-
+            .toList()
+            .let { playlists ->
+                assertFalse("not full extraction", playlists.size != playlistId.size)
+                playlists.forEach { checkPlaylistVideoData(it) }
+            }
     }
 
     @Test
     fun playlistDataExtractionRx() {
         ytStream.extractPlaylistVideoDataObservable(*playlistId)
-            .blockingSubscribe { checkPlaylistVideoData(it) }
+            .toList()
+            .blockingSubscribe { playlists ->
+                assertFalse("not full extraction", playlists.size != playlistId.size)
+                playlists.forEach { checkPlaylistVideoData(it) }
+            }
     }
 
     @Test
     fun playlistVideoDetails() = runBlocking {
         ytStream.extractPlaylistVideoDetails(*playlistId)
-            .collect { checkPlaylistVideoDetails(it) }
+            .toList()
+            .let { playlists ->
+                assertFalse("not full extraction", playlists.size != playlistId.size)
+                playlists.forEach { checkPlaylistVideoDetails(it) }
+            }
     }
 
     @Test
     fun playlistVideoDetailsRx() {
         ytStream.extractPlaylistVideoDetailsObservable(*playlistId)
-            .blockingSubscribe { checkPlaylistVideoDetails(it) }
+            .toList()
+            .blockingSubscribe { playlists ->
+                assertFalse("not full extraction", playlists.size != playlistId.size)
+                playlists.forEach { checkPlaylistVideoDetails(it) }
+            }
     }
 
     private fun checkPlaylistVideoData(playlistVideoData: PlaylistVideoData) {

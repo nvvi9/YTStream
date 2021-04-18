@@ -39,24 +39,21 @@ internal class EncodedStreams private constructor(
             val jsDecryptionDef =
                 raw.videoPageSource
                     .getIf { isEncoded || !statusOk }
-                    .map { async { JsDecryption.fromVideoPageSource(it) } }
+                    .getOrNull()
+                    ?.let { async { JsDecryption.fromVideoPageSource(it) } }
 
-            val (encodedSignatures, streams) =
-                getEncSignaturesStreams(
-                    isEncoded,
-                    if (isEncoded || !statusOk) raw.videoPageSource else raw.videoDetails.rawResponse.raw
+            getEncSignaturesStreams(
+                isEncoded,
+                if (isEncoded || !statusOk) raw.videoPageSource else raw.videoDetails.rawResponse.raw
+            ).getOrNull()?.let { (encodedSignatures, streams) ->
+                EncodedStreams(
+                    encodedSignatures, streams, raw.videoDetails,
+                    jsDecryptionDef?.await()?.getOrNull()
                 )
-
-            EncodedStreams(
-                encodedSignatures, streams, raw.videoDetails,
-                jsDecryptionDef.getOrNull()?.await()?.getOrNull()
-            )
+            }
         }
 
-        private fun getEncSignaturesStreams(
-            isEncoded: Boolean,
-            raw: String
-        ): Pair<Map<Int, String>, MutableList<Stream>> {
+        private fun getEncSignaturesStreams(isEncoded: Boolean, raw: String) = runCatching {
             val matcher = (if (isEncoded) patternCipher else patternUrl).matcher(raw)
             val encodedSignatures = mutableMapOf<Int, String>()
             val streams = mutableListOf<Stream>()
@@ -89,7 +86,8 @@ internal class EncodedStreams private constructor(
 
                 sig?.let { encodedSignatures[itag] = it }
             }
-            return encodedSignatures to streams
+
+            encodedSignatures to streams.toList()
         }
 
         private val patternItag: Pattern = Pattern.compile("itag=([0-9]+?)(&|\\z)")
