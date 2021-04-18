@@ -2,11 +2,10 @@ package com.nvvi9.ytstream
 
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.nvvi9.YTStream
-import com.nvvi9.model.PlaylistVideoData
-import com.nvvi9.model.PlaylistVideoDetails
-import com.nvvi9.model.VideoData
-import com.nvvi9.model.VideoDetails
+import com.nvvi9.ytstream.model.PlaylistVideoData
+import com.nvvi9.ytstream.model.PlaylistVideoDetails
+import com.nvvi9.ytstream.model.VideoData
+import com.nvvi9.ytstream.model.VideoDetails
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
