@@ -3,11 +3,11 @@ package com.nvvi9.ytstream.extractors
 import com.nvvi9.ytstream.model.PlaylistVideoData
 import com.nvvi9.ytstream.model.PlaylistVideoDetails
 import com.nvvi9.ytstream.model.playlist.PlaylistData
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapMerge
 
-@FlowPreview
+@OptIn(ExperimentalCoroutinesApi::class)
 internal object PlaylistExtractor {
 
     fun extractPlaylistVideoData(vararg playlistId: String) =

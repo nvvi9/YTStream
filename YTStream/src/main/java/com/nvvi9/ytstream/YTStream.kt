@@ -2,13 +2,9 @@ package com.nvvi9.ytstream
 
 import com.nvvi9.ytstream.extractors.PlaylistExtractor
 import com.nvvi9.ytstream.extractors.VideoExtractor
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.rx3.asObservable
 
 
-@ExperimentalCoroutinesApi
-@FlowPreview
 class YTStream {
 
     fun extractVideoData(vararg id: String) =

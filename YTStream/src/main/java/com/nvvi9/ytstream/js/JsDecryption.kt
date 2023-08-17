@@ -17,28 +17,27 @@ internal data class JsDecryption(
 
         private val jsHashMap = ConcurrentHashMap<String, JsDecryption>()
 
-        @Suppress("BlockingMethodInNonBlockingContext")
         suspend fun fromVideoPageSource(videPageSource: String) = coroutineScope {
             (patternDecryptionJsFile.matcher(videPageSource).takeIf { it.find() }
                 ?: patternDecryptionJsFileWithoutSlash.matcher(videPageSource).takeIf { it.find() })
                 .takeIfNotNull()
                 .mapNotNull { it.group(0)?.replace("\\/", "/") }
                 .mapNotNull { jsPath ->
-                    jsHashMap.get(jsPath) ?: KtorService.getJsFile(jsPath).getOrNull()
+                    jsHashMap[jsPath] ?: KtorService.getJsFile(jsPath).getOrNull()
                         ?.replace("\n", " ")
                         ?.let { jsFile ->
                             patternSignatureDecryptionFunction.matcher(jsFile).takeIf { it.find() }
-                                ?.let {
-                                    val decryptionFunction = it.group(1)
+                                ?.let { matcher ->
+                                    val decryptionFunction = matcher.group(1)
                                     val patternMainVariable =
                                         Pattern.compile(
                                             "(var |\\s|,|;)${
                                                 decryptionFunction?.replace("$", "\\$")
                                             }(=function\\((.{1,3})\\)\\{)"
                                         )
-                                    var matcher = patternMainVariable.matcher(jsFile)
-                                    var mainVariable: String = if (matcher.find()) {
-                                        "var $decryptionFunction ${matcher.group(2)}"
+                                    var jsFileMatcher = patternMainVariable.matcher(jsFile)
+                                    var mainVariable: String = if (jsFileMatcher.find()) {
+                                        "var $decryptionFunction ${jsFileMatcher.group(2)}"
                                     } else {
                                         val patternMainFunction =
                                             Pattern.compile(
@@ -46,10 +45,10 @@ internal data class JsDecryption(
                                                     decryptionFunction?.replace("$", "\\$")
                                                 }(\\((.{1,3})\\)\\{)"
                                             )
-                                        matcher = patternMainFunction.matcher(jsFile)
-                                        "function ${matcher.takeIf { it.find() }?.group(2)}"
+                                        jsFileMatcher = patternMainFunction.matcher(jsFile)
+                                        "function ${jsFileMatcher.takeIf { it.find() }?.group(2)}"
                                     }
-                                    var startIndex = matcher.end()
+                                    var startIndex = jsFileMatcher.end()
                                     var braces = 1
                                     for (i in startIndex until jsFile.length) {
                                         if (braces == 0 && startIndex + 5 < i) {
@@ -66,10 +65,10 @@ internal data class JsDecryption(
                                         }
                                     }
 
-                                    matcher = patternVariableFunction.matcher(mainVariable)
+                                    jsFileMatcher = patternVariableFunction.matcher(mainVariable)
 
-                                    while (matcher.find()) {
-                                        val variableDef = "var ${matcher.group(2)}={"
+                                    while (jsFileMatcher.find()) {
+                                        val variableDef = "var ${jsFileMatcher.group(2)}={"
                                         if (mainVariable.contains(variableDef)) {
                                             continue
                                         }
@@ -94,9 +93,9 @@ internal data class JsDecryption(
                                         }
                                     }
 
-                                    matcher = patternFunction.matcher(mainVariable)
-                                    while (matcher.find()) {
-                                        val functionDef = "function ${matcher.group(2)}("
+                                    jsFileMatcher = patternFunction.matcher(mainVariable)
+                                    while (jsFileMatcher.find()) {
+                                        val functionDef = "function ${jsFileMatcher.group(2)}("
                                         if (mainVariable.contains(functionDef)) {
                                             continue
                                         }
@@ -122,7 +121,7 @@ internal data class JsDecryption(
                                     }
                                     decryptionFunction?.let { function ->
                                         JsDecryption(mainVariable, function)
-                                            .also { jsHashMap.put(jsPath, it) }
+                                            .also { it -> jsHashMap[jsPath] = it }
                                     }
                                 }
                         }

@@ -2,11 +2,9 @@ package com.nvvi9.ytstream.model
 
 import com.nvvi9.ytstream.extractors.VideoExtractor
 import com.nvvi9.ytstream.model.playlist.PlaylistData
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.toList
 
-@FlowPreview
 data class PlaylistVideoData(
     val playlistId: String,
     val title: String,

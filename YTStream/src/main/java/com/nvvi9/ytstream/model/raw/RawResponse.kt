@@ -8,9 +8,8 @@ import kotlinx.coroutines.coroutineScope
 import org.json.JSONArray
 import java.util.regex.Pattern
 
-
-@Suppress("BlockingMethodInNonBlockingContext")
-inline class RawResponse private constructor(val raw: String) {
+@JvmInline
+value class RawResponse private constructor(val raw: String) {
 
     val id get() = patternVideoId.matcher(raw).takeIf { it.find() }?.group(1)
     val title get() = patternTitle.matcher(raw).takeIf { it.find() }?.group(1)

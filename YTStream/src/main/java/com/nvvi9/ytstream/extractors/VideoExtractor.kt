@@ -4,12 +4,12 @@ import com.nvvi9.ytstream.model.VideoData
 import com.nvvi9.ytstream.model.VideoDetails
 import com.nvvi9.ytstream.model.raw.Raw
 import com.nvvi9.ytstream.model.streams.EncodedStreams
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapMerge
 
-@FlowPreview
+@OptIn(ExperimentalCoroutinesApi::class)
 internal object VideoExtractor {
 
     fun extractVideoData(vararg id: String) =

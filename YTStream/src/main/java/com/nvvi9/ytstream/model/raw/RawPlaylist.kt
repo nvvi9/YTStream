@@ -2,15 +2,17 @@ package com.nvvi9.ytstream.model.raw
 
 import com.nvvi9.ytstream.network.KtorService
 import com.nvvi9.ytstream.utils.mapNotNull
+import org.json.JSONArray
 import org.json.JSONObject
 import java.util.regex.Pattern
 
-internal inline class RawPlaylist private constructor(private val playlist: JSONObject) {
+@JvmInline
+internal value class RawPlaylist private constructor(private val playlist: JSONObject) {
 
-    private val contents get() = playlist.getJSONArray("contents")
-    val playlistId get() = playlist.getString("playlistId")
-    val title get() = playlist.getString("title")
-    val videoContentId
+    private val contents: JSONArray get() = playlist.getJSONArray("contents")
+    val playlistId: String get() = playlist.getString("playlistId")
+    val title: String get() = playlist.getString("title")
+    val videoContentId: List<String>
         get() = (0 until contents.length())
             .mapNotNull {
                 contents.getJSONObject(it)

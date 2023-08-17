@@ -7,7 +7,6 @@ import com.nvvi9.ytstream.model.PlaylistVideoDetails
 import com.nvvi9.ytstream.model.VideoData
 import com.nvvi9.ytstream.model.VideoDetails
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertFalse
@@ -16,7 +15,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 
-@FlowPreview
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class YTStreamTest {
