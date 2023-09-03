@@ -12,5 +12,6 @@ data class StreamDetails(
     val videoCodec: VideoCodec? = null,
     val quality: Int? = null,
     val bitrate: Int? = null,
-    val fps: Int? = if (type == StreamType.AUDIO) null else 30
+    val fps: Int? = if (type == StreamType.AUDIO) null else 30,
+    val expiresInSeconds: Long? = null
 )

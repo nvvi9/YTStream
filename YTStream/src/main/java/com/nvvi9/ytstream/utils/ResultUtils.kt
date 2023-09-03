@@ -13,3 +13,7 @@ internal inline fun <T> T.getIf(predicate: (T) -> Boolean) =
 
 internal inline fun <T, R> Result<T>.mapNotNull(transform: (value: T) -> R?) =
     runCatchingNull { getOrNull()?.let { transform(it) } }
+
+@Suppress("UNCHECKED_CAST")
+internal inline fun <T, R> Result<T>.flatMap(transform: (T) -> Result<R>): Result<R> =
+    fold({ transform(it) }, { this as Result<R> })

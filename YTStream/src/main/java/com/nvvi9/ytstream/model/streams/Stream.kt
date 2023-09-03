@@ -11,11 +11,7 @@ data class Stream(
 
     companion object {
 
-        internal fun fromItag(itag: Int, uri: String) =
-             ITAG_MAP[itag]
-                 ?.let { Stream(uri, it) }
-
-        private val ITAG_MAP = mapOf(
+        val ITAG_MAP = mapOf(
             140 to StreamDetails(140, StreamType.AUDIO, Extension.M4A, AudioCodec.AAC, null, null, 128),
             141 to StreamDetails(141, StreamType.AUDIO, Extension.M4A, AudioCodec.AAC, null, null, 256),
             256 to StreamDetails(256, StreamType.AUDIO, Extension.M4A, AudioCodec.AAC, null, null, 192),

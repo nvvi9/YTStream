@@ -1,33 +1,58 @@
 package com.nvvi9.ytstream
 
-import com.nvvi9.ytstream.extractors.PlaylistExtractor
-import com.nvvi9.ytstream.extractors.VideoExtractor
-import kotlinx.coroutines.rx3.asObservable
+import android.content.Context
+import com.nvvi9.ytstream.extractors.StreamExtractor
+import com.nvvi9.ytstream.model.VideoData
+import com.nvvi9.ytstream.model.VideoDetails
+import com.nvvi9.ytstream.model.toVideoDetails
+import com.nvvi9.ytstream.model.youtube.InitialPlayerResponse
+import com.nvvi9.ytstream.network.NetworkService
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import java.util.regex.Pattern
 
 
-class YTStream {
+class YTStream(context: Context) {
 
-    fun extractVideoData(vararg id: String) =
-        VideoExtractor.extractVideoData(*id)
+    private val streamExtractor = StreamExtractor(context)
 
-    fun extractVideoDetails(vararg id: String) =
-        VideoExtractor.extractVideoDetails(*id)
+    @OptIn(ExperimentalSerializationApi::class)
+    private val json = Json(builderAction = {
+        explicitNulls = false
+        ignoreUnknownKeys = true
+    })
 
-    fun extractPlaylistVideoData(vararg playlistId: String) =
-        PlaylistExtractor.extractPlaylistVideoData(*playlistId)
+    suspend fun extractVideoData(id: String): Result<VideoData> =
+        NetworkService.getVideoPage(id).mapCatching { pageHtml ->
+            val playerResponse =
+                patternPlayerResponse.matcher(pageHtml).takeIf { it.find() }?.group(1)
+                    ?: throw IllegalStateException()
 
-    fun extractPlaylistVideoDetails(vararg playlistId: String) =
-        PlaylistExtractor.extractPlaylistVideoDetails(*playlistId)
+            val ytPlayerResponse = json.decodeFromString<InitialPlayerResponse>(playerResponse)
+            val streamingData = ytPlayerResponse.streamingData
 
-    fun extractVideoDataObservable(vararg id: String) =
-        extractVideoData(*id).asObservable()
+            val videoDetails = ytPlayerResponse.toVideoDetails()
 
-    fun extractVideoDetailsObservable(vararg id: String) =
-        extractVideoDetails(*id).asObservable()
+            val formats = (streamingData.formats + streamingData.adaptiveFormats)
+                .filter { it.type != "FORMAT_STREAM_TYPE_OTF" }
 
-    fun extractPlaylistVideoDataObservable(vararg playlistId: String) =
-        extractPlaylistVideoData(*playlistId).asObservable()
+            val streams = streamExtractor.extractStreams(pageHtml, formats)
+            VideoData(videoDetails, streams)
+        }
 
-    fun extractPlaylistVideoDetailsObservable(vararg playlistId: String) =
-        extractPlaylistVideoDetails(*playlistId).asObservable()
+    suspend fun extractVideoDetails(id: String): Result<VideoDetails> =
+        NetworkService.getVideoPage(id).mapCatching { pageHtml ->
+            val playerResponse =
+                patternPlayerResponse.matcher(pageHtml).takeIf { it.find() }?.group(1)
+                    ?: throw IllegalStateException()
+
+            val ytPlayerResponse = json.decodeFromString<InitialPlayerResponse>(playerResponse)
+            ytPlayerResponse.toVideoDetails()
+        }
+
+    companion object {
+
+        private val patternPlayerResponse =
+            Pattern.compile("var ytInitialPlayerResponse\\s*=\\s*(\\{.+?\\})\\s*;")
+    }
 }

@@ -2,6 +2,8 @@
 plugins {
     alias(libs.plugins.com.android.library)
     alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.org.jetbrains.kotlin.serialization)
+    `maven-publish`
 }
 
 android {
@@ -9,7 +11,7 @@ android {
     compileSdk = 33
 
     defaultConfig {
-        minSdk = 16
+        minSdk = 26
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -31,21 +33,43 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    publishing {
+        multipleVariants {
+            allVariants()
+            withJavadocJar()
+            withSourcesJar()
+        }
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("mavenRelease") {
+                groupId = "com.nvvi9"
+                artifactId = "ytstream"
+                version = "0.1.3"
+
+                from(components["release"])
+            }
+            create<MavenPublication>("mavenDebug") {
+                groupId = "com.nvvi9"
+                artifactId = "ytstream"
+                version = "0.1.3"
+
+                from(components["debug"])
+            }
+        }
+    }
 }
 
 dependencies {
-    // Coroutines
     implementation(libs.org.jetbrains.kotlinx.coroutines.android)
-    implementation(libs.org.jetbrains.kotlinx.coroutines.rx3)
+    implementation(libs.org.jetbrains.kotlinx.serialization.json)
+    implementation(libs.androidx.javascriptengine)
+    implementation(libs.guava)
 
-    // Ktor
-    implementation(libs.ktor.client)
-    implementation(libs.ktor.okhttp)
-
-    // Duktape
-    implementation(libs.duktape.android)
-
-    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)

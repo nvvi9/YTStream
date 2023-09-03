@@ -5,13 +5,13 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 
 
-internal fun String.decode(): String =
+internal fun String.decodeUrl(): String =
     URLDecoder.decode(this, "UTF-8")
 
-internal fun String.encode(): String =
+internal fun String.encodeUrl(): String =
     URLEncoder.encode(this, "UTF-8")
 
-internal fun List<Stream>.encode(decodeSignatures: List<String>, encSignatures: Map<Int, String>) =
+internal fun List<Stream>.encodeUrl(decodeSignatures: List<String>, encSignatures: Map<Int, String>) =
     encSignatures.keys.zip(decodeSignatures).toMap().let { signatures ->
         filter { signatures.any { (key, _) -> it.streamDetails.itag == key } }
             .map { it to it.copy(url = it.url.plus("&sig=${signatures[it.streamDetails.itag]}")) }
