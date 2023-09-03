@@ -1,56 +1,31 @@
 package com.nvvi9.ytstream.model
 
-import com.nvvi9.ytstream.model.raw.RawResponse
-import com.nvvi9.ytstream.utils.mapNotNull
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.flow
-
+import com.nvvi9.ytstream.model.youtube.InitialPlayerResponse
 
 data class VideoDetails(
     val id: String,
     val title: String,
-    val channel: String?,
-    val channelId: String?,
-    val description: String?,
-    val durationSeconds: Long?,
-    val viewCount: Long?,
+    val channel: String,
+    val channelId: String,
+    val description: String,
+    val durationSeconds: Long,
+    val expiresInSeconds: Long,
+    val viewCount: Long,
     val thumbnails: List<Thumbnail>,
-    val expiresInSeconds: Long?,
-    val isLiveStream: Boolean?,
-    internal val isSignatureEncoded: Boolean,
-    internal val statusOk: Boolean,
-    internal val rawResponse: RawResponse
-) {
+    val isLiveStream: Boolean
+)
 
-    companion object {
-
-        internal suspend fun fromId(id: String) = coroutineScope {
-            val thumbnailUrl = "https://img.youtube.com/vi/$id"
-            val thumbnails = listOf(
-                Thumbnail(120, 90, "$thumbnailUrl/default.jpg"),
-                Thumbnail(320, 180, "$thumbnailUrl/mqdefault.jpg"),
-                Thumbnail(480, 360, "$thumbnailUrl/hqdefault.jpg")
-            )
-
-            RawResponse.fromId(id)
-                .mapNotNull { rawResponse ->
-                    rawResponse.id?.let { id ->
-                        rawResponse.title?.let { title ->
-                            VideoDetails(
-                                id, title,
-                                rawResponse.author, rawResponse.channelId, rawResponse.description,
-                                rawResponse.durationSeconds, rawResponse.viewCount,
-                                rawResponse.thumbnails ?: thumbnails,
-                                rawResponse.expiresInSeconds, rawResponse.isLiveStream,
-                                rawResponse.isEncoded, rawResponse.statusOk, rawResponse
-                            )
-                        }
-                    }
-                }
-        }
-
-        internal suspend fun fromIdFlow(id: String) = flow {
-            emit(fromId(id).getOrNull())
-        }
-    }
-}
+internal fun InitialPlayerResponse.toVideoDetails() = VideoDetails(
+    id = videoDetails.videoId,
+    title = videoDetails.title,
+    channel = videoDetails.author,
+    channelId = videoDetails.channelId,
+    description = videoDetails.shortDescription,
+    durationSeconds = videoDetails.lengthSeconds.toLong(),
+    expiresInSeconds = streamingData.expiresInSeconds.toLong(),
+    viewCount = videoDetails.viewCount.toLong(),
+    thumbnails = videoDetails.thumbnail.thumbnails.map {
+        Thumbnail(it.width, it.height, it.url)
+    },
+    isLiveStream = videoDetails.isLiveContent
+)
