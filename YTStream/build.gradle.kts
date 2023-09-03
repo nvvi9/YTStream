@@ -26,12 +26,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     publishing {
@@ -49,14 +49,14 @@ afterEvaluate {
             create<MavenPublication>("mavenRelease") {
                 groupId = "com.nvvi9"
                 artifactId = "ytstream"
-                version = "0.1.4"
+                version = "0.1.5"
 
                 from(components["release"])
             }
             create<MavenPublication>("mavenDebug") {
                 groupId = "com.nvvi9"
                 artifactId = "ytstream"
-                version = "0.1.4"
+                version = "0.1.5"
 
                 from(components["debug"])
             }

@@ -71,10 +71,8 @@ class StreamExtractor(private val context: Context) {
         decipherJsFileName: String
     ): Result<String> {
         val javaScriptFile =
-            NetworkService.getJsFile(decipherJsFileName)
-                .onFailure {
-                    println(it.stackTraceToString())
-                }.getOrNull() ?: throw IllegalStateException()
+            NetworkService.getJsFile(decipherJsFileName).getOrNull()
+                ?: throw IllegalStateException()
 
         val matcher =
             patternSignatureDecFunction.matcher(javaScriptFile).takeIf { it.find() }
@@ -186,9 +184,7 @@ class StreamExtractor(private val context: Context) {
             encSignatures.map { it.signature },
             decipherFunctions,
             decipherFunctionName
-        ).onFailure {
-            println(it.stackTraceToString())
-        }
+        )
     }
 
     private suspend fun decipherEncodedSignatures(
@@ -201,9 +197,7 @@ class StreamExtractor(private val context: Context) {
                 acc + decipherFunctionName + "('" + s + if (index < encSignatures.size - 1) "')+\"\\n\"+" else "')"
             } + "};decipher();"
 
-        return JsExecutor.executeScript(context, script).onFailure {
-            println(it.stackTraceToString())
-        }
+        return JsExecutor.executeScript(context, script)
     }
 
     companion object {
